@@ -40,3 +40,8 @@ def main():
     for elem in vertices_list:
         print(elem.total_weight)
 main()
+
+print('dahg')
+print("chiesa the genius")
+print('degenerate tic tac toe')
+print('vodka')
