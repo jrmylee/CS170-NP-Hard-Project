@@ -1,4 +1,5 @@
-import Vertex
+from models.vertex import Vertex
+
 class T:
     def __init__(self, adj_list):
         # yer_mums_dahg is an adjacency list

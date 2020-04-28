@@ -1,4 +1,5 @@
 from models.vertex import Vertex
+from process import *
 
 # number, 
 # vertex a, vertex b, weight
@@ -37,11 +38,7 @@ def parse(filename):
 
 def main():
     adj_list, vertices_list = parse('./inputs/100.in')
+    process(vertices_list, adj_list)
     for elem in vertices_list:
         print(elem.total_weight)
 main()
-
-print('dahg')
-print("chiesa the genius")
-print('degenerate tic tac toe')
-print('vodka')

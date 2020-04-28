@@ -1,4 +1,4 @@
-from models.T import T
+from models.T import *
 
 # G is 
 # T should be a dahg
@@ -21,24 +21,50 @@ def get_neighbors(vertex, adj):
             n.append(neighbor)
     return n
 
+def computeCost(t):
+    return 1
+    #TODO
+
 def process(v, adj):
     t = T(adj)
     new_deg_fun = lambda k: k.new_degree
 
-    while(not t.isComplete(v)):
-        max_deg_vert = v[0]
+    max_deg_vert = v[0]
     
-        for vert in v:
-            max_deg_vert = max(vert, max_deg_vert, key = new_deg_fun)
-        
-        t.addVertex(max_deg_vert)
+    for vert in v:
+        max_deg_vert = max(vert, max_deg_vert, key = new_deg_fun)
+    for i in range(len(adj)):
+            if adj[i][max_deg_vert.val] != 0:
+                v[i].new_degree -= 1
+    t.addVertex(max_deg_vert, v)
+
+    while(not t.isComplete(v)):
+        #look through all vertices in T, check their neighbors
+        for vert in t.vertices:
+            max_deg_vert = None
+            for i in range(len(v[0])):
+                if adj[vert.val][i] != 0 :
+                    if (max_deg_vert == None or v[i].new_degree > max_deg_vert.new_degree):
+                        max_deg_vert = v[i]
+
         for i in range(len(adj)):
-            neighbor = adj[max_deg_vert.val][i]
-            if neighbor != 0:
-                nn = get_neighbors(neighbor, adj)
-                adj[max_deg_vert.val][i] = 0
-                for n in nn:
-                    if n not in t.neighbors_and_vertices:
-                        adj[max_deg_vert.val][i] += 1
+            if adj[i][max_deg_vert.val] != 0:
+                v[i].new_degree -= 1
+
+        t.addVertex(max_deg_vert, v)  
+
+    computeCost(t)
+
+
+
+
+        # for i in range(len(adj)):
+        #     neighbor = adj[max_deg_vert.val][i]
+        #     if neighbor != 0:
+        #         nn = get_neighbors(neighbor, adj)
+        #         adj[max_deg_vert.val][i] = 0
+        #         for n in nn:
+        #             if n not in t.neighbors_and_vertices:
+        #                 adj[max_deg_vert.val][i] += 1
                 
 
