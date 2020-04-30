@@ -71,14 +71,14 @@ def process(v, adj, filename):
         edge_vert = None
         edge = None
 
-        cur_cost = None
-        min_cost = None
+        cur_cost = (float('inf'), float('inf'), None)
+        min_cost = (float('inf'), float('inf'), None)
 
         for vert in v:
             if vert in t.vertices:
                 continue
             cur_cost = cost_function(vert)
-            if (max_deg_vert is None or cur_cost[0] < min_cost):
+            if (max_deg_vert is None or cur_cost[0] < min_cost[0]):
                 max_deg_vert = vert
                 edge_vert = v[cur_cost[2]]
                 edge = cur_cost[1]
