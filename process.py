@@ -40,19 +40,20 @@ def process(v, adj, filename):
             return float('inf')
         return vertex.new_degree / outgoing_weight
 
+    # returns the minimum cost, edge weight, and edge end vertex
     def cost_function(vertex):
-        # e^weight/new_degree
-        # new degree is the least cost path to T
         distances = dijkstras(v, adj, vertex)
         min_distance = float('inf')
+        destination = None
         for vert in t.vertices:
             if distances[vert.val] < min_distance:
                 min_distance = distances[vert.val]
+                destination = vert.val
         if min_distance == float('inf'):
             return float('inf')
         if vertex.new_degree == 0:
             return float('inf')
-        return 2**(min_distance/vertex.new_degree)
+        return (2**(min_distance/vertex.new_degree), min_distance, destination)
 
     max_deg_vert = v[0]
 
@@ -69,15 +70,20 @@ def process(v, adj, filename):
         max_deg_vert = None
         edge_vert = None
         edge = None
+
+        cur_cost = None 
+        min_cost = None
+
         for vert in v:
             if vert in t.vertices:
                 continue
-            for i in range(len(adj[0])):
-                if adj[vert.val][i] != 0 and v[i] not in t.vertices:
-                    if (max_deg_vert is None or cost_function(v[i]) > cost_function(max_deg_vert)):
-                        max_deg_vert = v[i]
-                        edge_vert = vert
-                        edge = adj[vert.val][i]
+            cur_cost = cost_function(vert)
+            if (max_deg_vert is None or cur_cost[0] < min_cost):
+                max_deg_vert = vert
+                edge_vert = v[cur_cost[2]]
+                edge = cur_cost[1]
+                min_cost = cur_cost
+
         for i in range(len(adj)):
             if adj[i][max_deg_vert.val] != 0:
                 v[i].new_degree -= 1
