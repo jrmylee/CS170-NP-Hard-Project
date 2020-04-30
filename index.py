@@ -59,6 +59,8 @@ def final_submission():
 
 def main():
     final_submission()
+    # adj_list, vertices_list = parse("./inputs/small.in")
+    # process(vertices_list, adj_list, "./fuck.out")
 
 
 main()

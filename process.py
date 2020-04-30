@@ -1,4 +1,5 @@
 from models.T import *
+from utils import *
 
 # G is
 # T should be a dahg
@@ -28,13 +29,36 @@ def computeCost(t, filename):
 
 
 def process(v, adj, filename):
+    # print(adj[1][0])
     t = T(adj)
-    def new_deg_fun(k): return k.new_degree
+
+    def initial_fun(vertex):
+        outgoing_weight = 0
+        for i in range(len(adj[0])):
+            outgoing_weight = max(outgoing_weight, adj[i][vertex.val])
+        if outgoing_weight == 0:
+            return float('inf')
+        return vertex.new_degree / outgoing_weight
+
+    def cost_function(vertex):
+        # e^weight/new_degree
+        # new degree is the least cost path to T
+        distances = dijkstras(v, adj, vertex)
+        min_distance = float('inf')
+        for vert in t.vertices:
+            if distances[vert.val] < min_distance:
+                min_distance = distances[vert.val]
+        if min_distance == float('inf'):
+            return float('inf')
+        if vertex.new_degree == 0:
+            return float('inf')
+        return 2**(min_distance/vertex.new_degree)
 
     max_deg_vert = v[0]
 
     for vert in v:
-        max_deg_vert = max(vert, max_deg_vert, key=new_deg_fun)
+        max_deg_vert = max(vert, max_deg_vert, key=initial_fun)
+
     for i in range(len(adj)):
         if adj[i][max_deg_vert.val] != 0:
             v[i].new_degree -= 1
@@ -45,14 +69,15 @@ def process(v, adj, filename):
         max_deg_vert = None
         edge_vert = None
         edge = None
-        for vert in t.vertices:
+        for vert in v:
+            if vert in t.vertices:
+                continue
             for i in range(len(adj[0])):
                 if adj[vert.val][i] != 0 and v[i] not in t.vertices:
-                    if (max_deg_vert is None or v[i].new_degree > max_deg_vert.new_degree):
+                    if (max_deg_vert is None or cost_function(v[i]) > cost_function(max_deg_vert)):
                         max_deg_vert = v[i]
                         edge_vert = vert
                         edge = adj[vert.val][i]
-
         for i in range(len(adj)):
             if adj[i][max_deg_vert.val] != 0:
                 v[i].new_degree -= 1
