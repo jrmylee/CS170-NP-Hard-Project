@@ -50,9 +50,9 @@ def process(v, adj, filename):
                 min_distance = distances[vert.val]
                 destination = vert.val
         if min_distance == float('inf'):
-            return float('inf')
+            return (float('inf'), float('inf'), -1)
         if vertex.new_degree == 0:
-            return float('inf')
+            return (float('inf'), float('inf'), -1)
         return (2**(min_distance/vertex.new_degree), min_distance, destination)
 
     max_deg_vert = v[0]
@@ -71,7 +71,7 @@ def process(v, adj, filename):
         edge_vert = None
         edge = None
 
-        cur_cost = None 
+        cur_cost = None
         min_cost = None
 
         for vert in v:
@@ -87,8 +87,10 @@ def process(v, adj, filename):
         for i in range(len(adj)):
             if adj[i][max_deg_vert.val] != 0:
                 v[i].new_degree -= 1
-
-        t.addVertex(max_deg_vert, v, edge_vert.val, edge)
+        if edge == float('inf'):
+            t.addVertex(max_deg_vert, v, -1, -1)
+        else:
+            t.addVertex(max_deg_vert, v, edge_vert.val, edge)
 
     return computeCost(t, filename)
     # for i in range(len(adj)):
