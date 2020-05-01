@@ -29,7 +29,6 @@ def computeCost(t, filename):
 
 
 def process(v, adj, filename):
-    # print(adj[1][0])
     t = T(adj)
 
     def initial_fun(vertex):
@@ -38,66 +37,91 @@ def process(v, adj, filename):
             outgoing_weight = max(outgoing_weight, adj[i][vertex.val])
         if outgoing_weight == 0:
             return float('inf')
-        return vertex.new_degree / outgoing_weight
+        return outgoing_weight / vertex.new_degree
+
+    #returns the new cost of T if new_vertex is added to T through v_in_T, assuming T is connected and a tree
+    def cost_function2(vertex, v_in_T, T):
+        size = len(T.vertices)
+        edge_weight = adj[vertex.val][v_in_T.val]
+        added_cost = v_in_T.cum_pairs_cost + size * edge_weight
+        return added_cost
+        pass
+
+
 
     # returns the minimum cost, edge weight, and edge end vertex
     def cost_function(vertex):
-        distances = dijkstras(v, adj, vertex)
+        distances, prev = dijkstras(v, adj, vertex)
         min_distance = float('inf')
         destination = None
         for vert in t.vertices:
             if distances[vert.val] < min_distance:
                 min_distance = distances[vert.val]
                 destination = vert.val
-        if min_distance == float('inf'):
-            return (float('inf'), float('inf'), -1)
-        if vertex.new_degree == 0:
-            return (float('inf'), float('inf'), -1)
-        return (2**(min_distance/vertex.new_degree), min_distance, destination)
 
-    max_deg_vert = v[0]
+        # Edge case: disjoint forest
+        if min_distance == float('inf'):
+            return (float('inf'), float('inf'), -1, [])
+
+        #Edge case: vertex does not connect to anything new
+        if vertex.new_degree == 0:
+            return (float('inf'), float('inf'), -1, [])
+
+        #TODO come back here
+
+        temp = destination
+        prev_arr = []
+
+        #reverse path order
+        while temp != vertex.val:
+            prev_arr.append(temp)
+            temp = prev[temp]
+        return (((min_distance)**2)/vertex.new_degree, min_distance, destination, prev_arr)
+
+    min_cost_vertex = v[0]
 
     for vert in v:
-        max_deg_vert = max(vert, max_deg_vert, key=initial_fun)
+        min_cost_vertex = max(vert, min_cost_vertex, key=initial_fun)
 
     for i in range(len(adj)):
-        if adj[i][max_deg_vert.val] != 0:
+        if adj[i][min_cost_vertex.val] != 0:
             v[i].new_degree -= 1
-    t.addVertex(max_deg_vert, v, -1, -1)
+    t.addVertex(min_cost_vertex, v, -1, -1)
 
     while not t.isComplete(v):
         # look through all vertices in T, check their neighbors
-        max_deg_vert = None
-        edge_vert = None
+        print("t is not complete")
+        min_cost_vertex = None
         edge = None
+        prev = []
 
-        cur_cost = (float('inf'), float('inf'), None)
-        min_cost = (float('inf'), float('inf'), None)
+        cur_cost = (float('inf'), float('inf'), None, [])
+        min_cost = (float('inf'), float('inf'), None, [])
 
         for vert in v:
             if vert in t.vertices:
                 continue
             cur_cost = cost_function(vert)
-            if (max_deg_vert is None or cur_cost[0] < min_cost[0]):
-                max_deg_vert = vert
-                edge_vert = v[cur_cost[2]]
+            if (min_cost_vertex is None or cur_cost[0] < min_cost[0]):
+                min_cost_vertex = vert
                 edge = cur_cost[1]
                 min_cost = cur_cost
+                prev = cur_cost[3]
 
         for i in range(len(adj)):
-            if adj[i][max_deg_vert.val] != 0:
+            if adj[i][min_cost_vertex.val] != 0:
                 v[i].new_degree -= 1
         if edge == float('inf'):
-            t.addVertex(max_deg_vert, v, -1, -1)
+            print('edge == float("inf")')
+            t.addVertex(min_cost_vertex, v, -1, -1)
         else:
-            t.addVertex(max_deg_vert, v, edge_vert.val, edge)
+            # for loop between all edges from cost function prev array
+            for i in range(1, len(prev)):
+                t.addVertex(v[prev[i]], v, prev[i-1], adj[prev[i-1]][prev[i]])
+                for j in range(len(adj)):
+                    if adj[j][prev[i]] != 0:
+                        v[j].new_degree -= 1  
+        
 
+        
     return computeCost(t, filename)
-    # for i in range(len(adj)):
-    #     neighbor = adj[max_deg_vert.val][i]
-    #     if neighbor != 0:
-    #         nn = get_neighbors(neighbor, adj)
-    #         adj[max_deg_vert.val][i] = 0
-    #         for n in nn:
-    #             if n not in t.neighbors_and_vertices:
-    #                 adj[max_deg_vert.val][i] += 1

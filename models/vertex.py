@@ -5,6 +5,9 @@ class Vertex:
         self.degree = degree
         self.new_degree = degree
 
+        self.connected = []
+        self.cum_pairs_cost = 0
+
     def set_degree(self, new_deg):
         self.degree = new_deg
 
@@ -16,3 +19,4 @@ class Vertex:
 
     def __lt__(self, other):
         return self.val < other.val
+i

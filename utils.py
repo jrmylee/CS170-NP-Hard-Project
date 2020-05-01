@@ -1,4 +1,4 @@
-import heapq
+from heapq import *
 
 # takes in vertices list with vertex nodes, adjacency list for the graph, and the source vertex
 
@@ -16,25 +16,24 @@ class special_tup:
     def __lt__(self, other):
         return self.tup[0] < other.tup[0]
 
-def dijkstras(vertices, adj_list, u):
+def dijkstras(vertices, l, s):
     distances = [float('inf')] * len(vertices)
-    distances[u.val] = 0
-    Q = []
+    distances[s.val] = 0
+    Q = [special_tup((0, vertices[s.val]))]
     prev = [-1] * len(vertices)
-    
-    for i in range(len(vertices)):
-        if vertices[i] == u:
-            heapq.heappush(Q, special_tup((0, vertices[i])))
-        else:
-            heapq.heappush(Q, special_tup((float('inf'), vertices[i])))
-    while Q != []:
-        min_distance_vertex = heapq.heappop(Q)
-        for j in range(len(adj_list[0])):
-            if adj_list[min_distance_vertex.get_v().val][j] == 0:
-                continue
-            alternate_distance = distances[min_distance_vertex.get_v().val] + \
-                adj_list[min_distance_vertex.get_v().val][j]
-            if alternate_distance < distances[j]:
-                prev[j] = min_distance_vertex.get_v().val
-                distances[j] = alternate_distance
+    seen = set()
+    while Q:
+        U = heappop(Q)
+        u = U.get_v().val
+        if u not in seen:
+            seen.add(u)
+            for i in range(len(l[0])):
+                if l[u][i] == 0:
+                    continue
+                if l[u][i] in seen: 
+                    continue
+                if distances[i] > distances[u] + l[u][i]:
+                    distances[i] = distances[u] + l[u][i]
+                    prev[i] = u
+                    heappush(Q, special_tup((distances[i], vertices[i])))
     return distances, prev
