@@ -16,11 +16,12 @@ class special_tup:
     def __lt__(self, other):
         return self.tup[0] < other.tup[0]
 
-
 def dijkstras(vertices, adj_list, u):
     distances = [float('inf')] * len(vertices)
     distances[u.val] = 0
     Q = []
+    prev = [-1] * len(vertices)
+    
     for i in range(len(vertices)):
         if vertices[i] == u:
             heapq.heappush(Q, special_tup((0, vertices[i])))
@@ -34,5 +35,6 @@ def dijkstras(vertices, adj_list, u):
             alternate_distance = distances[min_distance_vertex.get_v().val] + \
                 adj_list[min_distance_vertex.get_v().val][j]
             if alternate_distance < distances[j]:
+                prev[j] = min_distance_vertex.get_v().val
                 distances[j] = alternate_distance
-    return distances
+    return distances, prev
