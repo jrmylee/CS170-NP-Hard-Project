@@ -2,17 +2,17 @@ from models.vertex import Vertex
 
 
 class T:
-    def __init__(self, adj_list):
+    def __init__(self, adj_list, dijkstra_container):
         # yer_mums_dahg is an adjacency list
         self.adj_list = adj_list
         self.vertices = set()
         self.neighbors_and_vertices = set()
         self.edge_set = set()
         self.cost = 0
+        self.dijkstra_container = dijkstra_container
 
     # need to pass in vertices so that i can add the neighbor vertex
     def addVertex(self, vertex, g_vertices, source_val, edge_weight):
-        
         self.vertices.add(vertex)
         self.neighbors_and_vertices.add(vertex)
         if source_val != -1:
@@ -42,9 +42,21 @@ class T:
             g_vertices[source_val].connected.append(vertex)
             vertex.connected.append(g_vertices[source_val])
             dfs(g_vertices[source_val], vertex, 0)
-
-
     
+    # does not use T's shortest paths; need to modify
+    def averagePairwiseCost(self):
+        count = 0
+        cost = 0
+        for source in self.vertices:
+            for dest in self.vertices:
+                count += 1
+                if source.val == dest.val:
+                    continue
+                else:
+                    cost += self.dijkstra_container[source.val][0][dest.val]
+        return cost/count
+
+
             
 
 
@@ -52,8 +64,6 @@ class T:
     def isComplete(self, g_vertices):
         for vertex in g_vertices:
             if vertex not in self.neighbors_and_vertices:
-                print(vertex.val, 'is not in tree')
-                print([v.val for v in self.vertices])
                 return False
         return True
 

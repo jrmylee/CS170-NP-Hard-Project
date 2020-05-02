@@ -30,10 +30,13 @@ def dijkstras(vertices, l, s):
             for i in range(len(l[0])):
                 if l[u][i] == 0:
                     continue
-                if l[u][i] in seen: 
-                    continue
                 if distances[i] > distances[u] + l[u][i]:
                     distances[i] = distances[u] + l[u][i]
                     prev[i] = u
                     heappush(Q, special_tup((distances[i], vertices[i])))
+    # print(prev)
+    # exit()
+    # if s.val == 2:
+    #     print(l[2][1])
+    #     print(distances)
     return distances, prev

@@ -56,11 +56,9 @@ def final_submission():
             adj_list, vertices_list = parse(filename)
             process(vertices_list, adj_list, outputname)
 
-
 def main():
-    #final_submission()
-    adj_list, vertices_list = parse("./inputs/spider.in")
-    process(vertices_list, adj_list, "./fuck.out")
-
+    final_submission()
+    # adj_list, vertices_list = parse("./inputs/small-223.in")
+    # process(vertices_list, adj_list, "./bs.out")
 
 main()

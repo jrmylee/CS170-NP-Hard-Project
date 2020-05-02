@@ -29,13 +29,19 @@ def computeCost(t, filename):
 
 
 def process(v, adj, filename):
-    t = T(adj)
+    # there is an array that contains index for source vertex, and then contains distances array and prev array
+    dijkstra_container = []
+    for vert in v:
+        distances, prev = dijkstras(v, adj, vert)
+        dijkstra_container.append([distances, prev])
+    t = T(adj, dijkstra_container)
 
     def initial_fun(vertex):
-        outgoing_weight = 0
+        outgoing_weight = float('inf')
         for i in range(len(adj[0])):
-            outgoing_weight = max(outgoing_weight, adj[i][vertex.val])
-        if outgoing_weight == 0:
+            if adj[i][vertex.val] < outgoing_weight and i != vertex.val:
+                outgoing_weight = adj[i][vertex.val]
+        if outgoing_weight == 0 or vertex.new_degree == 0:
             return float('inf')
         return outgoing_weight / vertex.new_degree
 
@@ -50,8 +56,8 @@ def process(v, adj, filename):
 
 
     # returns the minimum cost, edge weight, and edge end vertex
-    def cost_function(vertex):
-        distances, prev = dijkstras(v, adj, vertex)
+    def cost_function(vertex, dijkstra_container):
+        distances, prev = dijkstra_container[vertex.val][0], dijkstra_container[vertex.val][1]
         min_distance = float('inf')
         destination = None
         for vert in t.vertices:
@@ -76,12 +82,13 @@ def process(v, adj, filename):
         while temp != vertex.val:
             prev_arr.append(temp)
             temp = prev[temp]
+        prev_arr.append(temp)
         return (((min_distance)**2)/vertex.new_degree, min_distance, destination, prev_arr)
 
     min_cost_vertex = v[0]
 
     for vert in v:
-        min_cost_vertex = max(vert, min_cost_vertex, key=initial_fun)
+        min_cost_vertex = min(vert, min_cost_vertex, key=initial_fun)
 
     for i in range(len(adj)):
         if adj[i][min_cost_vertex.val] != 0:
@@ -90,29 +97,22 @@ def process(v, adj, filename):
 
     while not t.isComplete(v):
         # look through all vertices in T, check their neighbors
-        print("t is not complete")
         min_cost_vertex = None
         edge = None
         prev = []
 
         cur_cost = (float('inf'), float('inf'), None, [])
         min_cost = (float('inf'), float('inf'), None, [])
-
         for vert in v:
             if vert in t.vertices:
                 continue
-            cur_cost = cost_function(vert)
+            cur_cost = cost_function(vert, dijkstra_container)
             if (min_cost_vertex is None or cur_cost[0] < min_cost[0]):
                 min_cost_vertex = vert
                 edge = cur_cost[1]
                 min_cost = cur_cost
                 prev = cur_cost[3]
-
-        for i in range(len(adj)):
-            if adj[i][min_cost_vertex.val] != 0:
-                v[i].new_degree -= 1
         if edge == float('inf'):
-            print('edge == float("inf")')
             t.addVertex(min_cost_vertex, v, -1, -1)
         else:
             # for loop between all edges from cost function prev array
@@ -121,7 +121,4 @@ def process(v, adj, filename):
                 for j in range(len(adj)):
                     if adj[j][prev[i]] != 0:
                         v[j].new_degree -= 1  
-        
-
-        
     return computeCost(t, filename)

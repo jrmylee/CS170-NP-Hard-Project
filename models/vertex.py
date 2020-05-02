@@ -10,6 +10,7 @@ class Vertex:
 
     def set_degree(self, new_deg):
         self.degree = new_deg
+        self.new_degree = new_deg
 
     def set_total_weight(self, new_weight):
         self.total_weight = new_weight
@@ -19,4 +20,3 @@ class Vertex:
 
     def __lt__(self, other):
         return self.val < other.val
-i
