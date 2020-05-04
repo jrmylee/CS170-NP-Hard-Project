@@ -34,7 +34,7 @@ def process(v, adj, filename):
     for vert in v:
         distances, prev = dijkstras(v, adj, vert)
         dijkstra_container.append([distances, prev])
-    t = T(adj, dijkstra_container)
+    t = T(adj, dijkstra_container, v)
 
     def initial_fun(vertex):
         outgoing_weight = float('inf')
@@ -83,7 +83,7 @@ def process(v, adj, filename):
             prev_arr.append(temp)
             temp = prev[temp]
         prev_arr.append(temp)
-        return (((min_distance)**2)/vertex.new_degree, min_distance, destination, prev_arr)
+        return (((min_distance)**3)/vertex.new_degree, min_distance, destination, prev_arr)
 
     min_cost_vertex = v[0]
 
@@ -121,4 +121,22 @@ def process(v, adj, filename):
                 for j in range(len(adj)):
                     if adj[j][prev[i]] != 0:
                         v[j].new_degree -= 1  
+    for i in v:
+        for j in v:
+            if adj[i.val][j.val] == 0:
+                continue
+            old_t_cost = t.cost
+            old_t_vertices = t.vertices
+            old_t_edgeset = t.edge_set
+            old_t_neighborsandvertices = t.neighbors_and_vertices
+            if (i.val, j.val, adj[i.val][j.val]) in t.edge_set or (j.val, i.val, adj[i.val][j.val]) in t.edge_set:
+                continue
+            else:
+                if i in t.vertices:
+                    if adj[i.val][j.val] < old_t_cost:
+                        if j not in t.vertices:
+                            t.addVertex(j, v, i.val, adj[i.val][j.val])
+                            new_t_cost = t.cost
+                            if old_t_cost < new_t_cost:
+                                t.redo(adj, dijkstra_container, v, old_t_vertices, old_t_neighborsandvertices, old_t_edgeset, old_t_cost)
     return computeCost(t, filename)

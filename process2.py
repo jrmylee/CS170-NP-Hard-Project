@@ -58,7 +58,6 @@ def process(v, adj, filename):
                 v[i].new_degree -= 1
 
         t.addVertex(max_deg_vert, v, edge_vert.val, edge)
-
     return computeCost(t, filename)
     # for i in range(len(adj)):
     #     neighbor = adj[max_deg_vert.val][i]

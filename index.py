@@ -58,7 +58,7 @@ def final_submission():
 
 def main():
     final_submission()
-    # adj_list, vertices_list = parse("./inputs/small-223.in")
+    # adj_list, vertices_list = parse("./inputs/small-67.in")
     # process(vertices_list, adj_list, "./bs.out")
 
 main()
