@@ -23,7 +23,13 @@ class T:
         self.g_vertices = g_vertices
 
     def addEdge(self, source, dest, edge_weight):
-        self.edge_set.add((source.val, dest.val, edge_weight))
+        if source not in self.vertices:
+            if dest not in self.vertices:
+                self.addVertex(dest, self.g_vertices, -1, -1)
+            self.addVertex(source, self.g_vertices, dest.val, edge_weight)
+            return
+        else:
+            self.edge_set.add((source.val, dest.val, edge_weight))
         self.cost = self.computeCost()
 
 

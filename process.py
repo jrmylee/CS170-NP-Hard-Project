@@ -45,16 +45,6 @@ def process(v, adj, filename):
             return float('inf')
         return outgoing_weight / vertex.new_degree
 
-    #returns the new cost of T if new_vertex is added to T through v_in_T, assuming T is connected and a tree
-    def cost_function2(vertex, v_in_T, T):
-        size = len(T.vertices)
-        edge_weight = adj[vertex.val][v_in_T.val]
-        added_cost = v_in_T.cum_pairs_cost + size * edge_weight
-        return added_cost
-        pass
-
-
-
     # returns the minimum cost, edge weight, and edge end vertex
     def cost_function(vertex, dijkstra_container):
         distances, prev = dijkstra_container[vertex.val][0], dijkstra_container[vertex.val][1]
@@ -139,4 +129,32 @@ def process(v, adj, filename):
                             new_t_cost = t.cost
                             if old_t_cost < new_t_cost:
                                 t.redo(adj, dijkstra_container, v, old_t_vertices, old_t_neighborsandvertices, old_t_edgeset, old_t_cost)
+    mst_vertices = []
+    mst_vertex_dict = {}
+    reverse_dict = {}
+    edge_weights = [[0 for i in range(len(t.vertices))] for j in range(len(t.vertices))]
+    count = 0
+    for vertex in t.vertices:
+        mst_vertex_dict[count] = vertex.val
+        reverse_dict[vertex.val] = count
+        temp = Vertex(count, 0, 0)
+        mst_vertices.append(temp)
+        count+=1
+    count = 0
+    for vertex in t.vertices:
+        for v2 in t.vertices:
+            if dijkstra_container[vertex.val][0][v2.val] == 0:
+                continue
+            edge_weights[count][reverse_dict[v2.val]] = dijkstra_container[vertex.val][0][v2.val]
+        count += 1
+    g = MST(mst_vertices, edge_weights)
+    tempT = T(adj, dijkstra_container, v)
+    for edge in g:
+        tempT.addEdge(v[mst_vertex_dict[edge[0]]], v[mst_vertex_dict[edge[1]]], edge[2])
+    old = t.cost
+    if tempT.cost < t.cost:
+        t = tempT
+    if old < t.cost:
+        print("YUH")
+        exit()
     return computeCost(t, filename)
