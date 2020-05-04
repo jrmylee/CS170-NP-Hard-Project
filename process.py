@@ -83,7 +83,7 @@ def process(v, adj, filename):
             prev_arr.append(temp)
             temp = prev[temp]
         prev_arr.append(temp)
-        return (((min_distance)**3)/vertex.new_degree, min_distance, destination, prev_arr)
+        return (((min_distance))/vertex.new_degree, min_distance, destination, prev_arr)
 
     min_cost_vertex = v[0]
 

@@ -1,12 +1,6 @@
 from models.vertex import Vertex
 from process import *
 
-# number,
-# vertex a, vertex b, weight
-
-# parse function
-
-
 def parse(filename):
     file = open(filename, 'r')
     contents_string = file.read()  # reads in as a string
@@ -58,7 +52,5 @@ def final_submission():
 
 def main():
     final_submission()
-    # adj_list, vertices_list = parse("./inputs/small-67.in")
-    # process(vertices_list, adj_list, "./bs.out")
 
 main()
